@@ -80,3 +80,81 @@ int main() {
 
     return 0;
 }
+
+
+
+
+
+
+
+#include <iostream>
+#include <cmath>
+
+using std::cout;
+using std::endl;
+
+class GeometricForm {
+public:
+    virtual ~GeometricForm() = default;
+    virtual double computeArea() const = 0;
+    virtual double computeCircumference() const = 0;
+};
+
+class Quadrilateral : public GeometricForm {
+protected:
+    double dimension1;
+    double dimension2;
+    
+public:
+    Quadrilateral(double d1, double d2) : dimension1(d1), dimension2(d2) {}
+    
+    double computeArea() const override {
+        return dimension1 * dimension2;
+    }
+    
+    double computeCircumference() const override {
+        return 2 * (dimension1 + dimension2);
+    }
+};
+
+class RoundShape : public GeometricForm {
+protected:
+    double radialDimension;
+    
+public:
+    explicit RoundShape(double r) : radialDimension(r) {}
+    
+    double computeArea() const override {
+        return M_PI * radialDimension * radialDimension;
+    }
+    
+    double computeCircumference() const override {
+        return 2 * M_PI * radialDimension;
+    }
+};
+
+int main() {
+    Quadrilateral box(5.0, 3.0);
+    RoundShape ring(4.0);
+
+    GeometricForm* form = &box;
+
+    const Quadrilateral* boxPtr = static_cast<const Quadrilateral*>(form);
+    cout << "Box area: " << boxPtr->computeArea() << endl;
+
+    if (dynamic_cast<RoundShape*>(form)) {
+        cout << "The form is circular." << endl;
+    } else {
+        cout << "The form is not circular." << endl;
+    }
+
+    const Quadrilateral& constBox = box;
+    Quadrilateral& mutableBox = const_cast<Quadrilateral&>(constBox);
+    mutableBox = Quadrilateral(6.0, 4.0);
+
+    int integerValue = 42;
+    double floatingValue = reinterpret_cast<double&>(integerValue);
+    cout << "Reinterpreted floating value: " << floatingValue << endl;
+
+    return 0;
+}
