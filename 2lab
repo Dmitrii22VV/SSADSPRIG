@@ -1,0 +1,99 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+class RectangularPrism {
+    unsigned int len;
+    unsigned int wid;
+    unsigned int hei;
+
+public:
+    RectangularPrism() : len(0), wid(0), hei(0) {}
+    RectangularPrism(unsigned int l, unsigned int w, unsigned int h) 
+        : len(l), wid(w), hei(h) {}
+        
+    RectangularPrism(const RectangularPrism& src) 
+        : len(src.len), wid(src.wid), hei(src.hei) {}
+        
+    RectangularPrism& operator=(const RectangularPrism& src) {
+        if (this != &src) {
+            len = src.len;
+            wid = src.wid;
+            hei = src.hei;
+        }
+        return *this;
+    }
+
+    unsigned int calculateVolume() const {
+        return len * wid * hei;
+    }
+
+    void resize(unsigned int factor) {
+        len *= factor;
+        wid *= factor;
+        hei *= factor;
+    }
+
+    bool hasLargerVolumeThan(const RectangularPrism& other) const {
+        return calculateVolume() > other.calculateVolume();
+    }
+
+    bool hasSmallerVolumeThan(const RectangularPrism& other) const {
+        return calculateVolume() < other.calculateVolume();
+    }
+
+    RectangularPrism operator*(unsigned int factor) const {
+        return RectangularPrism(len * factor, wid * factor, hei * factor);
+    }
+
+    bool operator==(const RectangularPrism& other) const {
+        unsigned int thisDimensions[3] = {len, wid, hei};
+        unsigned int otherDimensions[3] = {other.len, other.wid, other.hei};
+        sort(thisDimensions, thisDimensions + 3);
+        sort(otherDimensions, otherDimensions + 3);
+        return thisDimensions[0] == otherDimensions[0] && 
+               thisDimensions[1] == otherDimensions[1] && 
+               thisDimensions[2] == otherDimensions[2];
+    }
+};
+
+class PerfectCube {
+    unsigned int edgeLength;
+
+public:
+    PerfectCube(unsigned int e) : edgeLength(e) {}
+
+    operator RectangularPrism() const {
+        return RectangularPrism(edgeLength, edgeLength, edgeLength);
+    }
+};
+
+int main() {
+    RectangularPrism prism1(2, 3, 4);
+    RectangularPrism prism2 = prism1 * 2;
+    RectangularPrism prism3(4, 6, 8);
+
+    cout << "Volume of prism1: " << prism1.calculateVolume() << endl;
+    cout << "Volume of prism2: " << prism2.calculateVolume() << endl;
+
+    if (prism2 == prism3) {
+        cout << "prism2 and prism3 are identical in dimensions" << endl;
+    } else {
+        cout << "prism2 and prism3 have different dimensions" << endl;
+    }
+
+    PerfectCube cube(5);
+    RectangularPrism prism4 = cube;
+
+    cout << "Volume of prism4 (converted from cube): " 
+         << prism4.calculateVolume() << endl;
+
+    if (prism1.hasLargerVolumeThan(prism4)) {
+        cout << "prism1 has greater volume than prism4" << endl;
+    } else {
+        cout << "prism1 does not have greater volume than prism4" << endl;
+    }
+
+    return 0;
+}
