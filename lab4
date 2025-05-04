@@ -1,0 +1,82 @@
+#include <iostream>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+
+class BankAccount {
+protected:
+    int identifier;
+    double funds;
+    string clientName;
+
+public:
+    BankAccount() = default;
+    BankAccount(int id, double initial, string name) 
+        : identifier(id), funds(initial), clientName(name) {}
+    
+    BankAccount(const BankAccount&) = delete;
+    BankAccount& operator=(const BankAccount&) = delete;
+
+    void addFunds(double amount) {
+        funds += amount;
+    }
+
+    void deductFunds(double amount) {
+        if (hasSufficientFunds(amount)) {
+            funds -= amount;
+        } else {
+            cout << "Transaction declined: Not enough funds." << endl;
+        }
+    }
+
+    bool hasSufficientFunds(double amount) const {
+        return funds >= amount;
+    }
+
+    double checkBalance() const {
+        return funds;
+    }
+
+    int getIdentifier() const {
+        return identifier;
+    }
+
+    string getClient() const {
+        return clientName;
+    }
+};
+
+class InterestAccount : public BankAccount {
+private:
+    double annualRate;
+
+public:
+    InterestAccount(int id, double initial, string name, double rate)
+        : BankAccount(id, initial, name), annualRate(rate) {}
+
+    void applyInterest() {
+        double interest = funds * annualRate / 100.0;
+        addFunds(interest);
+    }
+
+    double getRate() const {
+        return annualRate;
+    }
+};
+
+int main() {
+    InterestAccount clientAccount(123456, 1000.0, "DMitrii", 2.5);
+    
+    clientAccount.addFunds(500.0);
+    clientAccount.deductFunds(200.0);
+    clientAccount.applyInterest();
+    
+    cout << "Account ID: " << clientAccount.getIdentifier() << endl;
+    cout << "Client: " << clientAccount.getClient() << endl;
+    cout << "Available funds: $" << clientAccount.checkBalance() << endl;
+    cout << "Annual interest rate: " << clientAccount.getRate() << "%" << endl;
+
+    return 0;
+}
