@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
+class LivingCreature {
+protected:
+    string creatureName;
+    int creatureAge;
+public:
+    LivingCreature(string n, int a) : creatureName(n), creatureAge(a) {}
+    virtual ~LivingCreature() = default;
+    virtual void vocalize() = 0;
+};
+
+class TerrestrialCreature : public LivingCreature {
+public:
+    TerrestrialCreature(string n, int a) : LivingCreature(n, a) {}
+    void moveOnLand() {
+        cout << creatureName << " moves on land." << endl;
+    }
+};
+
+class AquaticCreature : public LivingCreature {
+public:
+    AquaticCreature(string n, int a) : LivingCreature(n, a) {}
+    void moveInWater() {
+        cout << creatureName << " moves in water." << endl;
+    }
+};
+
+class KingOfJungle : public TerrestrialCreature {
+public:
+    KingOfJungle(string n, int a) : TerrestrialCreature(n, a) {}
+    void vocalize() override {
+        cout << creatureName << " lets out a powerful roar!" << endl;
+    }
+};
+
+class MarineMammal : public AquaticCreature {
+public:
+    MarineMammal(string n, int a) : AquaticCreature(n, a) {}
+    void vocalize() override {
+        cout << creatureName << " produces clicking sounds!" << endl;
+    }
+};
+
+class AmphibiousCreature : public TerrestrialCreature, public AquaticCreature {
+public:
+    AmphibiousCreature(string n, int a) 
+        : TerrestrialCreature(n, a), AquaticCreature(n, a) {}
+    void vocalize() override {
+        cout << creatureName << " makes a croaking noise!" << endl;
+    }
+    using TerrestrialCreature::creatureName;
+    using TerrestrialCreature::creatureAge;
+};
+
+int main() {
+    vector<LivingCreature*> creatures;
+    
+    creatures.push_back(new KingOfJungle("Simba", 4));
+    creatures.push_back(new MarineMammal("Flipper", 7));
+    creatures.push_back(new AmphibiousCreature("Kermit", 1));
+
+    for (auto* creature : creatures) {
+        creature->vocalize();
+        
+        if (auto* land = dynamic_cast<TerrestrialCreature*>(creature)) {
+            land->moveOnLand();
+        }
+        if (auto* water = dynamic_cast<AquaticCreature*>(creature)) {
+            water->moveInWater();
+        }
+    }
+
+    for (auto* creature : creatures) {
+        delete creature;
+    }
+
+    return 0;
+}
